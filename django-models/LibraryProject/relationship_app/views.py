@@ -89,3 +89,34 @@ def delete_book(request, book_id):
         return redirect('book_list')
     return render(request, 'relationship_app/delete_book.html', {'book': book})
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import user_passes_test
+
+
+# --- Helper functions to check roles ---
+def is_admin(user):
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
+
+def is_librarian(user):
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
+
+
+# --- Role-based views ---
+@user_passes_test(is_admin, login_url='/login/', raise_exception=True)
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+
+@user_passes_test(is_librarian, login_url='/login/', raise_exception=True)
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+
+@user_passes_test(is_member, login_url='/login/', raise_exception=True)
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
+
+
